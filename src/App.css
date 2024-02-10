@@ -1,0 +1,39 @@
+#root {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  margin: 0 auto;
+  text-align: center;
+  background: #ffffff;
+  color: black;
+  justify-content: center;
+  padding: 24px;
+}
+
+input {
+  outline: none;
+  background: none;
+font-size: 20px;
+}
+
+form{
+  background: #000;
+}
+.todos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.todo-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
