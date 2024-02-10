@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# React Portal Issue
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrate an issue in playwright component testing where playwright is unable to access elements mounted in a react portal.
 
-Currently, two official plugins are available:
+[Demo Video](./public/portal%20issue%20demo.mov)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+In the below code `formEl` is mounted in normal mode and inside portal, playwright can access when its mounted normal mode, but its unable to in portal mode.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
+```typescript jsx
+function App() {
+    const [todos, setTodos] = useState<Todo[]>([{id: 1, title: "Buy Milk"}])
+    const [formMode, setFormMode] = useState<"portal" | 'normal' | 'none'>('none')
+    const formEl = <div className={'form'}>
+        <form onSubmit={e => {
+            e.preventDefault()
+            setFormMode('none')
+            const data = e.currentTarget.elements.todo.value;
+            setTodos(prevVal => [...prevVal, {id: Date.now(), title: data}])
+        }}>
+            <input name={'todo'} placeholder={'Enter Todo'}/>
+            <button type={'submit'}>Submit</button>
+        </form>
+    </div>;
+    return (
+        <div>
+            <div className={'btn-group'}>
+                <button onClick={() => setFormMode('portal')}>Add Todo via Portal</button>
+                <button onClick={() => setFormMode('normal')}>Add Todo Normal Mode</button>
+            </div>
+            <div className={'todos'}>
+                {todos.map((todo) => (<div className={'todo-item'} key={todo.id}>
+                    {todo.title}
+                </div>))}
+            </div>
+            {formMode === 'portal' && createPortal(
+                formEl,
+                document.body
+            )}
+            {formMode === 'normal' && formEl}
+        </div>
+    )
 }
-```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+```
